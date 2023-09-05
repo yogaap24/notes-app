@@ -1,13 +1,14 @@
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
+
+const ClientError = require('./exceptions/ClientError');
+
 const notes = require('./api/notes');
 const NotesService = require('./services/postgres/NotesService');
 const NotesValidation = require('./validation/notes');
-const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
-
   const notesService = new NotesService();
 
   const server = Hapi.server({
@@ -19,7 +20,6 @@ const init = async () => {
       },
     },
   });
-
 
   await server.register({
     plugin: notes,
@@ -51,10 +51,11 @@ const init = async () => {
       });
       newResponse.code(500);
       console.error(response);
+      return newResponse;
     }
     return h.continue;
   });
-    
+
   await server.start();
   console.log(`Server berjalan pada ${server.info.uri}`);
 };
