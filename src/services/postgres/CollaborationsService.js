@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
 
 class CollaborationsService {
@@ -7,9 +8,11 @@ class CollaborationsService {
   }
 
   async addCollaboration(noteId, userId) {
+    const id = `collab-${nanoid(16)}`;
+
     const query = {
-      text: 'INSERT INTO collaborations VALUES($1, $2) RETURNING id',
-      values: [noteId, userId],
+      text: 'INSERT INTO collaborations VALUES($1, $2, $3) RETURNING id',
+      values: [id, noteId, userId],
     };
 
     const result = await this._pool.query(query);

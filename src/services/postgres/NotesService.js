@@ -8,7 +8,7 @@ const AuthorizationError = require('../../exceptions/AuthorizationError');
 class NotesService {
   constructor(collaborationService) {
     this._pool = new Pool();
-    this._collaborationsService = collaborationService; 
+    this._collaborationsService = collaborationService;
   }
 
   async verifyNoteAccess(noteId, userId) {
