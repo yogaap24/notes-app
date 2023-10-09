@@ -12,8 +12,18 @@ class NotesService {
   }
 
   async verifyNoteAccess(noteId, userId) {
-    await this.verifyNoteOwner(noteId, userId);
-    await this._collaborationService.verifyCollaborator(noteId, userId);
+    try {
+      await this.verifyNoteOwner(noteId, userId);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw error;
+      }
+      try {
+        await this._collaborationService.verifyCollaborator(noteId, userId);
+      } catch {
+        throw error;
+      }
+    }
   }
 
   async addNote({
