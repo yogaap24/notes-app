@@ -15,7 +15,17 @@ exports.up = (pgm) => {
     user_id: {
       type: 'VARCHAR(50)',
       notNull: true
-    }
+    },
+    created_at: {
+      type: 'TIMESTAMP',
+      notNull: true,
+      default: pgm.func('current_timestamp'),
+    },
+    updated_at: {
+      type: 'TIMESTAMP',
+      notNull: true,
+      default: pgm.func('current_timestamp'),
+    },
   });
 
   pgm.addConstraint('collaborations', 'unique_note_id_and_user_id', 'UNIQUE(note_id, user_id)');
