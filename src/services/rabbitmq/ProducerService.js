@@ -4,6 +4,7 @@ const path = require('path');
 
 const ProducerService = {
   sendMessage: async (queue, message) => {
+    // Used for RabbitMQ with SSL
     const options = {
       cert: fs.readFileSync(path.resolve(__dirname, '../rabbitmq/certs/new-cert.pem')),
       key: fs.readFileSync(path.resolve(__dirname, '../rabbitmq/certs/new-key.pem')),
