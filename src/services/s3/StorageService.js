@@ -1,26 +1,40 @@
-const AWS = require('aws-sdk');
+const Minio = require('minio');
 
 class StorageService {
   constructor() {
-    this._S3 = new AWS.S3();
+    this._client = new Minio.Client({
+      endPoint: process.env.MINIO_SERVER,
+      port: 9900,
+      useSSL: false,
+      accessKey: process.env.MINIO_ACCESS_KEY,
+      secretKey: process.env.MINIO_SECRET_KEY,
+    });
   }
 
-  writeFile(file, meta) {
-    const parameter = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: +new Date() + meta.filename,
-      Body: file._data,
-      ContentType: meta.headers['content-type'],
-    };
+  async writeFile(file, meta) {
+    const bucketName = 'notes-app';
+    const objectName = `${+new Date()}-${meta.filename}`;
 
-    return new Promise((resolve, reject) => {
-      this._S3.upload(parameter, (error, data) => {
-        if (error) {
-          return reject(error);
-        }
-        return resolve(data.Location);
-      });
-    });
+    try {
+      await this._client.putObject(
+        bucketName,
+        objectName,
+        file._data,
+        meta.headers['content-type']
+      );
+      return `http://${process.env.MINIO_SERVER}:${process.env.MINIO_PORT}/${bucketName}/${objectName}`;
+    } catch (error) {
+      throw new Error(`Error uploading file: ${error.message}`);
+    }
+  }
+
+  async deleteFile(objectName) {
+    const bucketName = 'notes-app';
+    try {
+      await this._client.removeObject(bucketName, objectName);
+    } catch (error) {
+      throw new Error(`Error deleting file: ${error.message}`);
+    }
   }
 }
 

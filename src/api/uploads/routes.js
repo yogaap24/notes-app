@@ -22,6 +22,18 @@ const routes = (handler) => [
       },
     },
   },
+  {
+    method: 'DELETE',
+    path: '/upload/images',
+    handler: handler.deleteImageHandler,
+    options: {
+      payload: {
+        allow: 'multipart/form-data',
+        multipart: true,
+        output: 'stream',
+      },
+    },
+  },
 ];
 
 module.exports = routes;
